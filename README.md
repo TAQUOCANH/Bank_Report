@@ -4,7 +4,7 @@
 
 | COLUMN_NAME     | DATA_TYPE   | DESCRIPTION                                                                 |
 |------------------|-------------|-----------------------------------------------------------------------------|
-| ID              | int         | Mã định danh duy nhất cho từng bản ghi trong bảng.                          |
+| ID              | int         | ID                        |
 | CUSTID          | nvarchar    | Mã định danh của khách hàng sở hữu tài khoản tiết kiệm.                     |
 | SAVING_ACC_ID   | nvarchar    | Số tài khoản tiết kiệm của khách hàng.                                      |
 | SAVE_DATE       | date        | Ngày khách hàng bắt đầu gửi tiền vào tài khoản tiết kiệm.                   |
@@ -349,7 +349,7 @@ GROUP BY 	CASE
 
 | **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                       |
 |--------------------|------------------|---------------------------------------------------------------------|
-| ID                | int              | Khóa chính của bảng.                                               |
+| ID                | int              | ID                                              |
 | COL_ID            | nvarchar         | Mã tài sản thế chấp, định danh duy nhất cho từng tài sản thế chấp. |
 | COL_TYPE_CODE     | nvarchar         | Mã loại tài sản thế chấp (nhà đất, xe cộ, v.v.).                   |
 | COL_AMOUNT        | numeric          | Giá trị tài sản thế chấp.                                           |

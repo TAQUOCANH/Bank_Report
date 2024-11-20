@@ -635,6 +635,10 @@ FROM
 ```
 <img width="837" alt="Screenshot_4" src="https://github.com/user-attachments/assets/6433263f-c445-4617-8958-0bd76bb34bca">
 
+
+
+
+# BÁO CÁO TÌNH HÌNH THANH TOÁN QUÝ I/2024
 ## DATASET
 
 | **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                       |

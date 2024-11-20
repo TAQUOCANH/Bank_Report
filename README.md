@@ -212,4 +212,4 @@ FROM
     ) X;
 
 ```
-<img width="860" alt="Screenshot_1" src="https://github.com/user-attachments/assets/6151f1af-e84f-41ef-b6df-224eea934277">```
+<img width="860" alt="Screenshot_1" src="https://github.com/user-attachments/assets/6151f1af-e84f-41ef-b6df-224eea934277">

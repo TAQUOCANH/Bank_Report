@@ -147,14 +147,17 @@ FULL OUTER JOIN [#CUOIKI] CK
 
 
 
+
+
 SELECT
 	 X.*
 FROM 
 	(	
-		SELECT [STT] = '1', [Nội dung] = N'Số khoản tiết kiệm',      [12/31/2023] =  COUNT([DK-TK]),            [Qúy I Mở Mới] =  COUNT([QUYI-PST-TK]),																																				  [Qúy I Tất toán] =  COUNT([QUYI-PSG-TK]), 																																															  [Qúy II Mở Mới] = COUNT([QUYII-PST-TK]),																																																				[Qúy II Tất toán] = COUNT([QUYII-PSG-TK]),																																[6/30/2024] = COUNT([CK-TK])				 FROM [#TONGHOP] UNION ALL
-		SELECT [STT] = '2', [Nội dung] = N'Số lượng khách hàng',     [12/31/2023] = COUNT(DISTINCT [DK-KH]),    [Qúy I Mở Mới] = (SELECT COUNT(DISTINCT [QUYI-PST-KH]) FROM [#QUYI-PST]  WHERE [QUYI-PST-KH] NOT IN (SELECT [DK-KH] FROM #DAUKI)),                    [Qúy I Tất toán] = (SELECT COUNT(DISTINCT [QUYI-PSG-KH]) FROM [#QUYI-PSG] WHERE [QUYI-PSG-KH] NOT IN ( SELECT DISTINCT CUSTID FROM [SAVING-WB2]..SAVING_ACCOUNT WHERE SAVE_DATE <= '2024-04-01' AND SAVE_END_DATE > '2024-04-01')),     [Qúy II Mở Mới] = (SELECT COUNT(DISTINCT [QUYII-PST-KH]) FROM [#QUYII-PST] WHERE [QUYII-PST-KH] NOT IN (SELECT DISTINCT CUSTID FROM [SAVING-WB2]..SAVING_ACCOUNT WHERE SAVE_DATE <= '2024-03-31' AND SAVE_END_DATE > '2024-03-31')),		[Qúy II Tất toán] = (SELECT COUNT(DISTINCT [QUYII-PSG-KH]) FROM [#QUYII-PSG] WHERE [QUYII-PSG-KH] NOT IN (SELECT [CK-KH] FROM #CUOIKI)),								[6/30/2024] = COUNT(DISTINCT [CK-KH])	     FROM [#TONGHOP] UNION ALL
-		SELECT [STT] = '3', [Nội dung] = N'Tổng tiền tiết kiệm',     [12/31/2023] = SUM([DK-ST]),               [Qúy I Mở Mới] = SUM([QUYI-PST-ST]),																																		          [Qúy I Tất toán] = SUM([QUYI-PSG-ST]),																																													              [Qúy II Mở Mới] = SUM([QUYII-PST-ST]),																																																				[Qúy II Tất toán] = SUM([QUYII-PSG-ST]),																																[6/30/2024] = SUM([CK-ST])					 FROM [#TONGHOP]
+		SELECT [STT] = '1', [Nội dung] = N'Số khoản tiết kiệm',      [12/31/2023] =  COUNT([DK-TK]),[Qúy I Mở Mới] =  COUNT([QUYI-PST-TK]),	 [Qúy I Tất toán] =  COUNT([QUYI-PSG-TK]), [Qúy II Mở Mới] = COUNT([QUYII-PST-TK]),	[Qúy II Tất toán] = COUNT([QUYII-PSG-TK]), [6/30/2024] = COUNT([CK-TK]) FROM [#TONGHOP] UNION ALL
+		SELECT [STT] = '2', [Nội dung] = N'Số lượng khách hàng',     [12/31/2023] = COUNT(DISTINCT [DK-KH]),[Qúy I Mở Mới] = (SELECT COUNT(DISTINCT [QUYI-PST-KH]) FROM [#QUYI-PST]  WHERE [QUYI-PST-KH] NOT IN (SELECT [DK-KH] FROM #DAUKI)), [Qúy I Tất toán] = (SELECT COUNT(DISTINCT [QUYI-PSG-KH]) FROM [#QUYI-PSG] WHERE [QUYI-PSG-KH] NOT IN ( SELECT DISTINCT CUSTID FROM [SAVING-WB2]..SAVING_ACCOUNT WHERE SAVE_DATE <= '2024-04-01' AND SAVE_END_DATE > '2024-04-01')),     [Qúy II Mở Mới] = (SELECT COUNT(DISTINCT [QUYII-PST-KH]) FROM [#QUYII-PST] WHERE [QUYII-PST-KH] NOT IN (SELECT DISTINCT CUSTID FROM [SAVING-WB2]..SAVING_ACCOUNT WHERE SAVE_DATE <= '2024-03-31' AND SAVE_END_DATE > '2024-03-31')),	[Qúy II Tất toán] = (SELECT COUNT(DISTINCT [QUYII-PSG-KH]) FROM [#QUYII-PSG] WHERE [QUYII-PSG-KH] NOT IN (SELECT [CK-KH] FROM #CUOIKI)), [6/30/2024] = COUNT(DISTINCT [CK-KH])	  FROM [#TONGHOP] UNION ALL
+		SELECT [STT] = '3', [Nội dung] = N'Tổng tiền tiết kiệm',     [12/31/2023] = SUM([DK-ST]),[Qúy I Mở Mới] = SUM([QUYI-PST-ST]),	[Qúy I Tất toán] = SUM([QUYI-PSG-ST]), [Qúy II Mở Mới] = SUM([QUYII-PST-ST]), [Qúy II Tất toán] = SUM([QUYII-PSG-ST]), [6/30/2024] = SUM([CK-ST]) FROM [#TONGHOP]
 	) X;
+
 
 
 ```

@@ -213,3 +213,102 @@ FROM
 
 ```
 <img width="860" alt="Screenshot_1" src="https://github.com/user-attachments/assets/6151f1af-e84f-41ef-b6df-224eea934277">
+
+
+
+
+
+
+### Các khoản tất toán năm 2024
+
+```sql
+
+SELECT
+    X2.*
+FROM
+    (
+        -- Số tiền gốc phải trả
+        SELECT 
+            [Tiêu Chí] = N'Số tiền gốc phải trả',  
+            [Quý I] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 1 THEN SAV_AMOUNT END),
+            [Quý II] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 2 THEN SAV_AMOUNT END),
+            [Quý III] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 3 THEN SAV_AMOUNT END),
+            [Quý IV] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 4 THEN SAV_AMOUNT END)
+        FROM 
+            [SAVING-WB2]..SAVING_ACCOUNT 
+        WHERE 
+            [SAVE_END_DATE] BETWEEN '2024-01-01' AND '2024-12-31'
+        
+        UNION ALL
+        
+        -- Số tiền lãi phải trả
+        SELECT 
+            [Tiêu Chí] = N'Số tiền lãi phải trả',  
+            [Quý I] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 1 THEN 
+                                (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                              END),
+            [Quý II] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 2 THEN 
+                                 (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                               END),
+            [Quý III] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 3 THEN 
+                                  (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                                END),
+            [Quý IV] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 4 THEN 
+                                 (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                               END)
+        FROM 
+            [SAVING-WB2]..SAVING_ACCOUNT 
+        WHERE 
+            [SAVE_END_DATE] BETWEEN '2024-01-01' AND '2024-12-31'
+        
+        UNION ALL
+        
+        -- Tổng
+        SELECT 
+            [Tiêu Chí] = N'Tổng',  
+            [Quý I] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 1 THEN 
+                                SAV_AMOUNT + (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                              END),
+            [Quý II] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 2 THEN 
+                                 SAV_AMOUNT + (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                               END),
+            [Quý III] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 3 THEN 
+                                  SAV_AMOUNT + (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                                END),
+            [Quý IV] = SUM(CASE WHEN DATEPART(QUARTER, [SAVE_END_DATE]) = 4 THEN 
+                                 SAV_AMOUNT + (SAV_AMOUNT * (INTEREST / 100.0) * DATEDIFF(DAY, SAVING_ACCOUNT.SAVE_DATE, SAVING_ACCOUNT.SAVE_END_DATE) / 365) 
+                               END)
+        FROM 
+            [SAVING-WB2]..SAVING_ACCOUNT 
+        WHERE 
+            [SAVE_END_DATE] BETWEEN '2024-01-01' AND '2024-12-31'
+    ) X2;
+```
+
+<img width="588" alt="Screenshot_2" src="https://github.com/user-attachments/assets/6eef9d71-775c-48a6-86ed-8f6a29f5bef8">
+
+
+### Phân loại theo các tiêu chí
+
+```sql
+
+SELECT
+		[Phân Loại]=  CASE
+						  WHEN SAV_AMOUNT < 1000000000                              THEN    N'Dưới 1 tỷ'
+						  WHEN SAV_AMOUNT >=	1000000000	AND SAV_AMOUNT <= 10000000000 THEN    N'Từ 1 đến 10 tỷ'
+						  WHEN SAV_AMOUNT >	10000000000 AND SAV_AMOUNT <= 50000000000 THEN    N'Từ 10 đến 50 tỷ'
+						  WHEN SAV_AMOUNT >	50000000000	THEN N'TRÊN 50 TỶ'
+					  END 
+		,[Số khoản tiết kiệm] = COUNT(DISTINCT SAVING_ACC_ID)
+		,[Số tiền tiết kiệm]  = SUM(SAV_AMOUNT)
+FROM [SAVING-WB2]..SAVING_ACCOUNT
+GROUP BY 	CASE
+				WHEN SAV_AMOUNT < 1000000000                              THEN    N'Dưới 1 tỷ'
+				WHEN SAV_AMOUNT >=	1000000000	AND SAV_AMOUNT <= 10000000000 THEN    N'Từ 1 đến 10 tỷ'
+				WHEN SAV_AMOUNT >	10000000000 AND SAV_AMOUNT <= 50000000000 THEN    N'Từ 10 đến 50 tỷ'
+				WHEN SAV_AMOUNT >	50000000000	THEN N'TRÊN 50 TỶ'
+			END;
+```
+<img width="378" alt="Screenshot_3" src="https://github.com/user-attachments/assets/6e82a008-5275-44bc-8165-91382107b942">
+
+

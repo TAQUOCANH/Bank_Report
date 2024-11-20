@@ -634,3 +634,125 @@ FROM
 
 ```
 <img width="837" alt="Screenshot_4" src="https://github.com/user-attachments/assets/6433263f-c445-4617-8958-0bd76bb34bca">
+
+## DATASET
+
+| **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                       |
+|------------------------|------------------|---------------------------------------------------------------------|
+| ID                     | int              | ID                                              |
+| CASA_ACCOUNT           | nvarchar         | Số tài khoản CASA (tài khoản thanh toán).                          |
+| TRANS_TIME             | datetime         | Thời gian giao dịch được thực hiện.                               |
+| PRE_AMOUNT             | numeric          | Số dư tài khoản trước khi giao dịch.                               |
+| INCREASE               | numeric          | Số tiền tăng vào tài khoản trong giao dịch.                        |
+| DECREASE               | numeric          | Số tiền giảm khỏi tài khoản trong giao dịch.                       |
+| AFTER_AMOUNT           | numeric          | Số dư tài khoản sau khi giao dịch.                                 |
+| CUR_CODE               | nvarchar         | Mã loại tiền tệ (ví dụ: VND, USD).                                 |
+| NOTE                   | nvarchar         | Ghi chú thêm về giao dịch (nếu có).                                |
+| SENT_ACC               | nvarchar         | Số tài khoản gửi tiền trong giao dịch.                            |
+| DESTINATION_ACC        | nvarchar         | Số tài khoản nhận tiền trong giao dịch.                           |
+| TRANSFER_TYPE_CODE     | nvarchar         | Mã loại giao dịch chuyển tiền (ví dụ: chuyển tiền qua ngân hàng, ví điện tử, v.v.). |
+
+Nếu bạn cần thêm script SQL để tạo bảng này hoặc xuất ra file Excel, vui lòng cho tôi biết! 😊
+
+## REPORT
+
+```SQL
+---1. SỐ DƯ ĐẦU KỲ-----
+SELECT			A.MONTH	'THÁNG',
+				SUM(A.PRE_AMOUNT)	'ĐẦU KỲ'
+FROM			(
+	SELECT		ID,
+				CASA_ACCOUNT,
+				TRANS_TIME,
+				PRE_AMOUNT,
+				AFTER_AMOUNT,
+				MONTH(TRANS_TIME)																	'MONTH',
+				DENSE_RANK() OVER(PARTITION BY CASA_ACCOUNT, MONTH(TRANS_TIME) ORDER BY ID ASC)		'RANK'
+	FROM		CASA
+				) AS A
+WHERE			A.RANK = 1 
+GROUP BY		A.MONTH
+ORDER BY		A.MONTH
+
+---2. SỐ DƯ CUỐI KỲ
+SELECT			A.MONTH	'THÁNG',
+				SUM(A.PRE_AMOUNT)	'CUỐI KỲ'
+FROM			(
+	SELECT		ID,
+				CASA_ACCOUNT,
+				TRANS_TIME,
+				PRE_AMOUNT,
+				AFTER_AMOUNT,
+				MONTH(TRANS_TIME)																	    'MONTH',
+				DENSE_RANK() OVER(PARTITION BY CASA_ACCOUNT, MONTH(TRANS_TIME) ORDER BY ID DESC)		'RANK'
+	FROM		CASA
+				) AS A
+WHERE			A.RANK = 1 
+GROUP BY		A.MONTH
+ORDER BY		A.MONTH
+
+---3. TỔNG TIỀN CHUYỂN KHOẢN TỪ CÁC TÀI KHOẢN TRONG NGÂN HÀNG TỚI CÁC TÀI KHOẢN NGOÀI NGÂN HÀNG --
+
+SELECT		MONTH(TRANS_TIME)	'THÁNG',
+			SUM(DECREASE)		'SỐ TIỀN'
+FROM		CASA
+WHERE		TRANSFER_TYPE_CODE = 'out' AND DECREASE > 0
+GROUP BY	MONTH(TRANS_TIME)
+ORDER BY	THÁNG
+
+---4. TỔNG TIỀN CHUYỂN KHOẢN TỪ CÁC TÀI KHOẢN NGOÀI NGÂN HÀNG TỚI CÁC TÀI KHOẢN TRONG NGÂN HÀNG
+
+SELECT		MONTH(TRANS_TIME)	'THÁNG',
+			SUM(INCREASE)		'SỐ TIỀN'
+FROM		CASA
+WHERE		TRANSFER_TYPE_CODE = 'out' AND INCREASE > 0
+GROUP BY	MONTH(TRANS_TIME)
+ORDER BY	THÁNG
+
+-- 5. TỔNG TIỀN MẶT RÚT RA TỪ TÀI KHOẢN
+
+SELECT		MONTH(TRANS_TIME)	'THÁNG',
+			SUM(DECREASE)		'SỐ TIỀN'
+FROM		CASA
+WHERE		DESTINATION_ACC = ' ' AND DECREASE > 0
+GROUP BY	MONTH(TRANS_TIME)
+ORDER BY	THÁNG
+
+-- 6. TỔNG TIỀN MẶT NỘP VÀO TÀI KHOẢN
+
+SELECT		MONTH(TRANS_TIME)	'THÁNG',
+			SUM(INCREASE)		'TỔNG TIỀN'
+FROM		CASA
+WHERE		SENT_ACC = ' ' AND INCREASE > 0
+GROUP BY	MONTH(TRANS_TIME)
+ORDER BY	THÁNG
+
+--TOP 3 KHÁCH HÀNG CÓ TỔNG LƯỢNG TIỀN GIAO DỊCH  (CẢ NHẬN VÀ CHUYỂN) LỚN NHẤT
+
+IF object_id('TEMPDB..[#RankedCustomers]','U') IS NOT NULL DROP TABLE [#RankedCustomers];
+SELECT 
+    [Mã KH] = C.CUSTID,
+    [Chi nhánh] = B.BRANCH_NAME,
+    [Tên khách hàng] = C.CUSTNAME,
+    [Tài khoản Casa] = CA.CASA_ACCOUNT,
+    [Tổng tiền GD] = SUM(CA.DECREASE + CA.INCREASE),
+    ROW_NUMBER() OVER(ORDER BY SUM(CA.DECREASE + CA.INCREASE) DESC) AS rank_cus
+INTO [#RankedCustomers]
+FROM [SAVING-WB2]..CUSTOMER C
+LEFT JOIN [SAVING-WB2]..CASA CA
+    ON C.CASA_ACCOUNT = CA.CASA_ACCOUNT
+LEFT JOIN [SAVING-WB2]..CODE_BRANCH B
+    ON C.BRANCH_CODE = B.BRANCH_CODE
+GROUP BY C.CUSTID, B.BRANCH_NAME, C.CUSTNAME, CA.CASA_ACCOUNT;
+
+SELECT 
+    [STT] = ROW_NUMBER() OVER(ORDER BY [Tổng tiền GD] DESC),
+    [Mã KH], 
+    [Chi nhánh], 
+    [Tên khách hàng], 
+    [Tài khoản Casa], 
+    [Tổng tiền GD]
+FROM [#RankedCustomers]
+WHERE rank_cus <= 3;
+```
+<img width="1087" alt="Screenshot_1" src="https://github.com/user-attachments/assets/7029f1f6-0b82-4708-85f2-d374ecff6b58">

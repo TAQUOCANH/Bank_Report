@@ -17,7 +17,7 @@
 | WITHDRAW_DAY    | date        | Ngày khách hàng rút tiền từ tài khoản tiết kiệm.                            |
 | SAV_STATUS      | int         | Trạng thái của tài khoản tiết kiệm (0 = Đóng, 1 = Hoạt động, 2 = Đáo hạn). |
 
-
+## REPORT
 ### Về quy mô
 ```sql
 USE [SAVING-WB2]
@@ -313,7 +313,51 @@ GROUP BY 	CASE
 
   # BÁO CÁO TÌNH HÌNH CẤP TÍN DỤNG NĂM 2024
 ## DATASET
-## 
+### CREDIT_CONTRACT
+
+| **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                      |
+|--------------------------|------------------|----------------------------------------------------------------|
+| ID                      | int              | ID                                           |
+| CUSTID                  | nvarchar         | Mã khách hàng, định danh duy nhất cho khách hàng.              |
+| DEBID                   | nvarchar         | Mã người vay, dùng để theo dõi hợp đồng theo người vay.         |
+| MA_ID                   | nvarchar         | Mã tài khoản quản lý, mã tham chiếu nội bộ.                    |
+| CRCONTRACT_ID           | nvarchar         | Mã hợp đồng tín dụng, định danh duy nhất cho hợp đồng tín dụng.|
+| CR_CONTRACT_DATE        | date             | Ngày ký hợp đồng tín dụng.                                     |
+| CR_AMOUNT               | numeric          | Tổng số tiền tín dụng trong hợp đồng.                         |
+| CR_CONTRACT_END_DATE    | date             | Ngày kết thúc hợp đồng tín dụng.                              |
+| CR_INTEREST             | numeric          | Lãi suất áp dụng cho hợp đồng tín dụng.                       |
+
+### CREDIT_PLAN
+
+| **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                       |
+|--------------------------|------------------|-------------------------------------------------------------------|
+| ID                      | int              | ID                                            |
+| PLAN_ID                 | nvarchar         | Mã kế hoạch, định danh duy nhất cho từng kế hoạch trả nợ.         |
+| DEBID                   | nvarchar         | Mã người vay, dùng để theo dõi hợp đồng theo người vay.           |
+| PRE_AMOUNT              | numeric          | Số tiền trả trước (nếu có).                                       |
+| PERIOD_ID               | int              | Mã kỳ hạn, dùng để theo dõi thời gian trả nợ.                     |
+| START_DATE              | date             | Ngày bắt đầu của kỳ hạn hoặc kế hoạch trả nợ.                     |
+| END_DATE                | date             | Ngày kết thúc của kỳ hạn hoặc kế hoạch trả nợ.                    |
+| PERIOD_LEN              | int              | Thời gian kỳ hạn (tính theo tháng).                              |
+| INTEREST                | numeric          | Lãi suất áp dụng cho kỳ hạn.                                      |
+| PRINCIPAL_AMOUNT        | numeric          | Số tiền gốc cần thanh toán trong kỳ hạn.                         |
+| INTEREST_AMOUNT         | numeric          | Số tiền lãi cần thanh toán trong kỳ hạn.                         |
+| TOTAL_AMOUNT            | numeric          | Tổng số tiền phải thanh toán (gốc + lãi).                        |
+
+### COLLATERALS
+
+
+| **COLUMN_NAME**             | **DATA_TYPE** | **DESCRIPTION**                                                       |
+|--------------------|------------------|---------------------------------------------------------------------|
+| ID                | int              | Khóa chính của bảng.                                               |
+| COL_ID            | nvarchar         | Mã tài sản thế chấp, định danh duy nhất cho từng tài sản thế chấp. |
+| COL_TYPE_CODE     | nvarchar         | Mã loại tài sản thế chấp (nhà đất, xe cộ, v.v.).                   |
+| COL_AMOUNT        | numeric          | Giá trị tài sản thế chấp.                                           |
+| COL_ADD           | nvarchar         | Địa chỉ của tài sản thế chấp.                                       |
+| CITY_CODE         | int              | Mã thành phố nơi tài sản thế chấp được đăng ký.                    |
+| MA_ID             | nvarchar         | Mã tài khoản quản lý liên quan đến tài sản thế chấp.               |
+
+## REPORT
 
 ```SQL
 IF object_id('TEMPDB..[#DAUKY_TINDUNG]','U') IS NOT NULL DROP TABLE [#DAUKY_TINDUNG];

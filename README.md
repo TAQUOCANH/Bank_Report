@@ -311,4 +311,6 @@ GROUP BY 	CASE
 ```
 <img width="378" alt="Screenshot_3" src="https://github.com/user-attachments/assets/6e82a008-5275-44bc-8165-91382107b942">
 
-
+  # BÁO CÁO TÌNH HÌNH CẤP TÍN DỤNG NĂM 2024
+## DATASET
+### Về quy mô tín dụng

@@ -656,7 +656,6 @@ FROM
 | DESTINATION_ACC        | nvarchar         | Số tài khoản nhận tiền trong giao dịch.                           |
 | TRANSFER_TYPE_CODE     | nvarchar         | Mã loại giao dịch chuyển tiền (ví dụ: chuyển tiền qua ngân hàng, ví điện tử, v.v.). |
 
-Nếu bạn cần thêm script SQL để tạo bảng này hoặc xuất ra file Excel, vui lòng cho tôi biết! 😊
 
 ## REPORT
 
